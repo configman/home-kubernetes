@@ -1,0 +1,42 @@
+- name: add ssh key to authorized_keys
+  lineinfile:
+    path: /root/.ssh/authorized_keys
+    line: "{{ vars[super_user + '_public_key'] }}"
+    regexp: ".*{{ super_user }}.*"
+
+- name: add root public key to authorized_keys
+  lineinfile:
+    path: /root/.ssh/authorized_keys
+    line: "{{ vars[inventory_hostname + '_root_public_key'] }}"
+    regexp: ".*root@{{ inventory_hostname }}"
+
+- name: add ssh private key
+  copy:
+    content: "{{ vars[inventory_hostname + '_root_private_key'] }}"
+    dest: /root/.ssh/id_rsa
+    mode: 0600
+  no_log: true
+
+- name: add ssh public key file
+  copy:
+    content: "{{ vars[inventory_hostname + '_root_public_key'] }}"
+    dest: /root/.ssh/id_rsa.pub
+
+- name: add self ssh key to known_hosts
+  shell: /usr/bin/ssh-keyscan -t rsa -H {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} > /root/.ssh/known_hosts
+  args:
+    creates: /root/.ssh/known_hosts
+  no_log: true
+
+- name: secure SSH access - no password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: PasswordAuthentication no
+    regexp: .*PasswordAuthentication yes
+
+- name: add super user key to authorized_keys
+  authorized_key:
+    user: "{{ super_user }}"
+    key: "{{ vars[super_user + '_public_key'] }}"
+  no_log: true
+

@@ -1,7 +1,15 @@
-- hosts: kube-masters
+- hosts: "{{ masters | default('kube_masters') }}"
+
   become: yes
+
+  vars:
+    super_user: lookup('env', 'USER')
+    ansible_ssh_user: "{{ super_user }}"
+
   roles:
+    - ssh
     - hosts
     - kube-dependencies
     - kube-master-dependencies
     - kube-master-init
+    - flannel

@@ -1,0 +1,11 @@
+- hosts: "{{ upgrade_list | default('all') }}"
+  remote_user: root
+  become: yes
+  vars:
+    ansible_ssh_user: damon
+    ansible_ssh_pass: "{{ damon_password }}"
+  roles:
+    - sudo
+    - dist-upgrade
+    - ssh
+    - hosts

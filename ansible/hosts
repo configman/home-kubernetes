@@ -1,12 +1,17 @@
-localhost ansible_host=127.0.0.1
+[kube_masters]
+pi1 ansible_host=192.168.100.12 ansible_ssh_user=root
 
-[kube-masters]
-master1.kube.local ansible_host=192.168.40.102
+[kube_nodes]
+pi2 ansible_host=192.168.100.13 ansible_ssh_user=root
 
-[kube-nodes]
-node1.kube.local ansible_host=192.168.40.103
-node2.kube.local ansible_host=192.168.40.104
+[kube_mini]
+mini ansible_host=192.168.100.14 ansible_ssh_user=root
+
+[kube_imac]
+imac ansible_host=192.168.100.15 ansible_ssh_user=root
 
 [ubuntu:children]
-kube-masters
-kube-nodes
+kube_masters
+kube_nodes
+kube_mini
+kube_imac

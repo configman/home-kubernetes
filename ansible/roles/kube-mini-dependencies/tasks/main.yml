@@ -1,0 +1,53 @@
+- name: install containerd
+  apt:
+    name: containerd
+    state: present
+
+- name: install Docker
+  apt:
+    name: docker.io
+    state: present
+    update_cache: true
+
+- name: install docker compose
+  apt:
+    name: docker-compose
+    state: present
+
+- name: update Docker to change cgroups
+  copy:
+    src: ./mini-docker-daemon.json
+    dest: /etc/docker/daemon.json
+    
+- name: create systemctl daemon folder
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: 0755
+
+- name: restart systemctl daemon
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: docker
+
+- name: install APT Transport HTTPS
+  apt:
+    name: apt-transport-https
+    state: present
+
+- name: install microk8s
+  snap: 
+    name: microk8s
+    classic: yes
+
+- name: start k8s services
+  command: /snap/bin/microk8s.enable dashboard registry
+
+- name: start k8s
+  command: /snap/bin/microk8s.start
+  
+- name: install helm
+  snap:
+    name: helm
+    classic: yes

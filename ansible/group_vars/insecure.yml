@@ -1,0 +1,10 @@
+userName_public_key: "<insert public key text here> Note - this should be a single line of text starting with ssh-rsa and ending with the user@host"
+userName_password: password_here
+pi1_root_private_key: "<Insert privatekey text here>  Note that private key must be broken in correct line format as it would appear on the console if you 'cat' the key file - I had to insert \n characters in the text to make this work"
+pi2_root_private_key: "<Insert privatekey text here>  Note that private key must be broken in correct line format as it would appear on the console if you 'cat' the key file - I had to insert \n characters in the text to make this work"
+mini_root_private_key: "<Insert privatekey text here>  Note that private key must be broken in correct line format as it would appear on the console if you 'cat' the key file - I had to insert \n characters in the text to make this work"
+imac_root_private_key: "<Insert privatekey text here>  Note that private key must be broken in correct line format as it would appear on the console if you 'cat' the key file - I had to insert \n characters in the text to make this work"
+pi1_root_public_key: "<insert public key text here> Note - this should be a single line of text starting with ssh-rsa and ending with the user@host"
+pi2_root_public_key: "<insert public key text here> Note - this should be a single line of text starting with ssh-rsa and ending with the user@host"
+mini_root_public_key: "<insert public key text here> Note - this should be a single line of text starting with ssh-rsa and ending with the user@host"
+imac_root_public_key: "<insert public key text here> Note - this should be a single line of text starting with ssh-rsa and ending with the user@host"

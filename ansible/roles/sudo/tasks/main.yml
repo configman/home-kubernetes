@@ -1,0 +1,4 @@
+- name: passwordless sudo
+  copy:
+    content: damon ALL=(ALL) NOPASSWD:ALL
+    dest: /etc/sudoers.d/damon

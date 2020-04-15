@@ -1,4 +1,30 @@
+# Forked from https://github.com/toidi/home-kubernetes
+
+The below is the original README from the cloned repository.  There is a READ.me with notes from my efforts to use this work on my home setup in the ansibe folder.
+
+I've made changes to work with local hardware instead of cloud based services.  I've also added ansible vault to encrypt sensitive data required for the setup of a new machine from scratch.  Local hardware was initially two raspberry pi 2, model b, but have now added a mac mini (2010) on which I have installed Ubuntue 18.04.
+
+Mac hardware before around 2013 used a 32 bit EFI, which does not work with Ubuntu 18.04 because it has dropped 32 bit support.  I used an ISO image from 
+
+https://mattgadient.com/linux-dvd-images-and-how-to-for-32-bit-efi-macs-late-2006-models/ burnt to a SD card to install ubuntu on the Mac hardware and then used the ansible scripts here to install and setup docker, kubernetes, etc.
+
+Run 
+
+```bash
+ansible-playbook --vault-id=<vaultId>@prompt -i hosts -e "masters=kube_imac" -e "super_user=damon" -e "ansible_ssh_user=damon" kube-imac.yml
+```
+
+To run the ansible playbook for installing imac setup. This is the most recently tested script.  The default behaviour of the kube-master and kube-nodes scripts has been run multiple times on raspberry pi, but I am experiencing some issues with long term stability of the cluster and performance of a Pi2 is not really working for me :) so I have started to concentrate on the old, but more powerful imac (a 2011 model), which has 20GB RAM and 500GB harddrive.
+
+The Mac hardware is using microk8s, which has proven much simpler to install that a vanilla k8s install (which can be seen in the origina kube-master and kube-node roles in this repo).
+
+## Ansible Vault
+
+I have setup a vault, as shown above, but the actual vault is not committed to this repo.  You'll need to replace the existing group\_vars/all.yml file with a suitably populated vault instance to make this setup work.  Well, it would not be necessary to use vault if you don't wish to, but it avoid the risk of committing the keys to the repo unprotected.  There's an example of how the all.yml file needs to look in the file group_vars/insecure.yml
+
+
 # testproject
+
 
 ## Ansible environment setup
 

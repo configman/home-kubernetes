@@ -1,6 +1,6 @@
 - name: update hosts file
   lineinfile:
-    dest: /etc/hosts
+    path: /etc/hosts
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     regexp: '.*{{ item }}$'
   with_items: "{{ groups.all }}"

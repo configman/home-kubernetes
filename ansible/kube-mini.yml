@@ -1,0 +1,8 @@
+- hosts: "{{ targets | default('kube_mini') }}"
+  become: yes
+  vars:
+    super_user: lookup('env', 'USER')
+  roles:
+    - ssh
+    - hosts
+    - kube-mini-dependencies

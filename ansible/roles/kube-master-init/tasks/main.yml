@@ -1,3 +1,8 @@
+- name: prepull the kubeadm images
+  command: kubeadm config images pull
+  register: kubeadm_config_pull
+#how to detect when this has already run and make idempotent?
+
 - name: initialize the cluster
   command: kubeadm init --pod-network-cidr=10.244.0.0/16
   args:
@@ -12,16 +17,16 @@
 
 - name: create .kube directory
   file:
-    path: /home/eduard/.kube
+    path: /home/damon/.kube
     state: directory
     mode: 0755
-    owner: eduard
-    group: eduard
+    owner: damon
+    group: damon
 
 - name: copy admin.conf to user's kube config
   copy:
     src: /etc/kubernetes/admin.conf
-    dest: /home/eduard/.kube/config
+    dest: /home/damon/.kube/config
     remote_src: yes
-    owner: eduard
-    group: eduard
+    owner: damon
+    group: damon

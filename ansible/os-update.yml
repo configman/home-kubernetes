@@ -1,0 +1,28 @@
+- hosts: "{{ masters | default('kube_masters, kube_nodes') }}"
+
+  become: yes
+  gather_facts: yes
+
+  vars:
+
+    ansible_ssh_user: ubuntu
+    ansible_ssh_pass: raspberry1
+
+  tasks:
+
+    - name: run apt to update and upgrade all packages
+      apt:
+          upgrade: yes
+          update_cache: yes
+          cache_valid_time: 300
+
+    - name: Set authorized keys for damon
+      authorized_key:
+        user: "{{ super_user }}"
+        key: "{{ vars[super_user + '_public_key'] }}"
+
+    - name: Allow admin user to use sudo without a password
+      copy:
+        content: "{{ super_user }} ALL=(ALL) NOPASSWD:ALL"
+        dest: /etc/sudoers.d/{{ super_user }}
+

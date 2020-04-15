@@ -1,0 +1,8 @@
+- hosts: kube_imac
+  become: yes
+  vars:
+    super_user: lookup('env', 'USER')
+  roles:
+    - ssh
+    - hosts
+    - kube-mini-dependencies

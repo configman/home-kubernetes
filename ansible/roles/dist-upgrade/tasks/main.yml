@@ -1,0 +1,17 @@
+- name: apt update and upgrade
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400
+
+- name: apt- dist upgrade
+  apt:
+    upgrade: dist
+  register: apt_dist
+
+- name: reboot after upgrading
+  reboot:
+    reboot_timeout: 600
+    connect_timeout: 300
+    post_reboot_delay: 30
+  when: apt_dist.changed

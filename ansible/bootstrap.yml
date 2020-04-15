@@ -1,19 +1,33 @@
-- hosts: all
+- hosts: "{{ masters | default('kube_masters, kube_nodes') }}"
+  remote_user: root
   become: yes
 
   vars:
-    ansible_user: ubuntu
+    super_user: "{{ lookup('env', 'USER') }}"
+
+    ansible_ssh_user: ubuntu
     # ubuntu requires change default password on the first login
     # so you should manually login and change password to `raspberry1`
     # https://wiki.ubuntu.com/ARM/RaspberryPi#First_boot_.28Username.2FPassword.29
     ansible_ssh_pass: raspberry1
-    ansible_connection: paramiko
+#    ansible_connection: paramiko
 
   tasks:
+
+    - name: run apt to update and upgrade all packages
+      apt:
+          upgrade: yes
+          update_cache: yes
+          cache_valid_time: 300
+          
+    - name: reboot 1
+      reboot:
+        reboot_timeout: 3600
+
     - name: Enable memory control group subsystem
       replace:
-        # https://wiki.ubuntu.com/ARM/RaspberryPi#Raspberry_Pi_packages
-        path: /boot/firmware/cmdline.txt
+      # https://wiki.ubuntu.com/ARM/RaspberryPi#Raspberry_Pi_packages
+        path: /boot/firmware/nobtcmd.txt
         regexp: '(rootwait)$'
         replace: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
 
@@ -30,24 +44,23 @@
       reboot:
         reboot_timeout: 3600
 
-    - name: Create eduard superuser
+    - name: Create admin superuser
       user:
-        name: eduard
+        name: "{{ super_user }}"
         shell: /bin/bash
         groups: sudo
 
-    - name: Set authorized keys for eduard
+    - name: Set authorized keys for damon
       authorized_key:
-        user: eduard
-        key: "{{ eduard_ssh_pub_key }}"
+        user: "{{ super_user }}"
+        key: "{{ vars[super_user + '_public_key'] }}"
 
-    - name: Allow eduard to use sudo without a password
+    - name: Allow admin user to use sudo without a password
       copy:
-        content: "eduard ALL=(ALL) NOPASSWD:ALL"
-        dest: /etc/sudoers.d/eduard
+        content: "{{ super_user }} ALL=(ALL) NOPASSWD:ALL"
+        dest: /etc/sudoers.d/{{ super_user }}
 
-    - name: Remove bootstrap user
-      user:
-        name: "{{ ansible_user }}"
-        shell: /usr/sbin/nologin
-        password_lock: yes
+    - name: remove ubuntu user
+      name: ubuntu
+      remove: yes
+      state: absent

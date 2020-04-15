@@ -1,8 +1,40 @@
+- name: install containerd
+  apt:
+    name: containerd
+    state: present
+
+- name: disable swap
+  replace:
+  # remove swap from fstab
+    path: /etc/fstab
+    regexp: '^# (.*swap.*)$'
+    replace: '# \1'
+
+- name: stop swap
+  command: swapoff -a
+
 - name: install Docker
   apt:
     name: docker.io
     state: present
     update_cache: true
+
+- name: update Docker to change cgroups
+  copy:
+    src: ./daemon.json
+    dest: /etc/docker/daemon.json
+    
+- name: create systemctl daemon folder
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: 0755
+
+- name: restart systemctl daemon
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: docker
 
 - name: install APT Transport HTTPS
   apt:
@@ -22,17 +54,17 @@
 
 - name: install kubelet
   apt:
-    name: kubelet=1.14.2-00
+    name: kubelet={{ kube_version }}
     state: present
     update_cache: true
 
 - name: install kubeadm
   apt:
-    name: kubeadm=1.14.2-00
+    name: kubeadm={{ kube_version }}
     state: present
 
 - name: enable service docker
-  service:
+  systemd:
     name: docker
     enabled: yes
 
